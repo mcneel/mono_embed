@@ -2,6 +2,13 @@
 #include <dlfcn.h>
 #include <stdio.h>
 
+// TODO: Change these two paths for your own system
+// using lame hard coded paths because I'm lazy and just want to get a sample put together
+const char* MONO_64_PATH = "/Users/bozo/Projects/Rhino5Commercial/src4/rhino4/MacOS/Mono64Framework/Mono.framework";
+const char* EMBED_TEST_PATH = "/Users/bozo/dev/mono_embed/EmbedTest/bin/Debug/EmbedTest.exe";
+
+
+// Mono types/functions used for embedding
 struct MonoDomain;
 struct MonoAssembly;
 struct MonoImage;
@@ -9,8 +16,6 @@ struct MonoClass;
 struct MonoMethod;
 struct MonoObject;
 
-
-// Mono types/functions used for embedding
 typedef void (__cdecl *PFUNC_mono_set_dirs)(const char*, const char*);
 typedef void (__cdecl *PFUNC_mono_onestring)(const char*);
 typedef MonoDomain* (__cdecl *PFUNC_mono_jit_init_version)(const char*, const char*);
@@ -82,18 +87,14 @@ int main (int argc, char* argv[])
 {
   printf("Starting embed test\n");
 
-  // using lame hard coded paths because I'm lazy and just want to get a sample put together
-  auto mono_path = "/Users/stevenbaer/dev/rhino/mac5/src4/rhino4/MacOS/Mono64Framework/Mono64Rhino.framework/Versions/Current";
-  auto assembly_path = "/Users/stevenbaer/dev/mono_embed/EmbedTest/bin/Debug/EmbedTest.exe";
-  
-  if( !InitializeMonoForOSX(mono_path) )
+  if( !InitializeMonoForOSX(MONO_64_PATH) )
     return 1;
   
-  MonoDomain* app_domain = mono_jit_init_version(assembly_path, "v4.0");
+  MonoDomain* app_domain = mono_jit_init_version(EMBED_TEST_PATH, "v4.0");
   if( nullptr == app_domain )
     return 1;
  
-  MonoAssembly* assembly = mono_domain_assembly_open( app_domain, assembly_path);
+  MonoAssembly* assembly = mono_domain_assembly_open( app_domain, EMBED_TEST_PATH);
   if( nullptr == assembly )
     return 1;
   
